@@ -1,12 +1,9 @@
 package com.example.tickets.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,9 +34,17 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    //TODO: Organized events
-    //TODO: Attending events
-    //TODO: Staffing events
+    @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL)
+    @Builder.Default
+    private ArrayList<Event> organizedEvents = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "attendees")
+    @Builder.Default
+    private ArrayList<Event> attendingEvents = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "staff")
+    @Builder.Default
+    private ArrayList<Event> staffingEvents = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
