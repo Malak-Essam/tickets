@@ -34,6 +34,10 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "purchaser")
+    @Builder.Default
+    private ArrayList<Ticket> purchasedTickets = new ArrayList<>();
+
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL)
     @Builder.Default
     private ArrayList<Event> organizedEvents = new ArrayList<>();
