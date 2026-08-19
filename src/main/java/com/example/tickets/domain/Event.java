@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -78,6 +79,10 @@ public class Event {
     )
     @Builder.Default
     private ArrayList<User> staff = new ArrayList<>();
+
+    @OneToMany(mappedBy = "event")
+    @Builder.Default
+    private ArrayList<TicketType> ticketTypes = new ArrayList<>();
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
