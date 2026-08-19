@@ -18,6 +18,7 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -89,6 +90,28 @@ public class Event {
 
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Event event = (Event) o;
+        return Objects.equals(id, event.id)
+            && Objects.equals(name, event.name)
+            && Objects.equals(startDate, event.startDate)
+            && Objects.equals(endDate, event.endDate)
+            && Objects.equals(venue, event.venue)
+            && Objects.equals(salesStart, event.salesStart)
+            && Objects.equals(salesEnd, event.salesEnd)
+            && status == event.status
+            && Objects.equals(createdAt, event.createdAt)
+            && Objects.equals(updatedAt, event.updatedAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, startDate, endDate, venue, salesStart, salesEnd, status, createdAt, updatedAt);
+    }
 
     @PrePersist
     protected void onCreate() {
