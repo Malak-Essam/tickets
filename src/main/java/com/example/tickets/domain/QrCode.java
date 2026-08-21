@@ -1,5 +1,6 @@
 package com.example.tickets.domain;
 
+import com.example.tickets.domain.base.Auditable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,10 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -27,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class QrCode {
+public class QrCode extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -44,12 +42,6 @@ public class QrCode {
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -58,23 +50,12 @@ public class QrCode {
         return Objects.equals(id, qrCode.id)
             && status == qrCode.status
             && Objects.equals(value, qrCode.value)
-            && Objects.equals(createdAt, qrCode.createdAt)
-            && Objects.equals(updatedAt, qrCode.updatedAt);
+            && Objects.equals(getCreatedAt(), qrCode.getCreatedAt())
+            && Objects.equals(getUpdatedAt(), qrCode.getUpdatedAt());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, status, value, createdAt, updatedAt);
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+        return Objects.hash(id, status, value, getCreatedAt(), getUpdatedAt());
     }
 }

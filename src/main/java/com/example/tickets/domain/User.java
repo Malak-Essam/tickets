@@ -1,8 +1,8 @@
 package com.example.tickets.domain;
 
+import com.example.tickets.domain.base.Auditable;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class User extends Auditable {
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -28,12 +28,6 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private String email;
-
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "purchaser")
     @Builder.Default
@@ -59,23 +53,12 @@ public class User {
         return Objects.equals(id, user.id)
             && Objects.equals(name, user.name)
             && Objects.equals(email, user.email)
-            && Objects.equals(createdAt, user.createdAt)
-            && Objects.equals(updatedAt, user.updatedAt);
+            && Objects.equals(getCreatedAt(), user.getCreatedAt())
+            && Objects.equals(getUpdatedAt(), user.getUpdatedAt());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, email, createdAt, updatedAt);
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+        return Objects.hash(id, name, email, getCreatedAt(), getUpdatedAt());
     }
 }

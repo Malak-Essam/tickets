@@ -1,5 +1,6 @@
 package com.example.tickets.domain;
 
+import com.example.tickets.domain.base.Auditable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,8 +14,6 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,7 +30,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Event {
+public class Event extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -85,12 +84,6 @@ public class Event {
     @Builder.Default
     private ArrayList<TicketType> ticketTypes = new ArrayList<>();
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -104,23 +97,12 @@ public class Event {
             && Objects.equals(salesStart, event.salesStart)
             && Objects.equals(salesEnd, event.salesEnd)
             && status == event.status
-            && Objects.equals(createdAt, event.createdAt)
-            && Objects.equals(updatedAt, event.updatedAt);
+            && Objects.equals(getCreatedAt(), event.getCreatedAt())
+            && Objects.equals(getUpdatedAt(), event.getUpdatedAt());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, startDate, endDate, venue, salesStart, salesEnd, status, createdAt, updatedAt);
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+        return Objects.hash(id, name, startDate, endDate, venue, salesStart, salesEnd, status, getCreatedAt(), getUpdatedAt());
     }
 }

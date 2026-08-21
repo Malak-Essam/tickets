@@ -1,8 +1,8 @@
 package com.example.tickets.domain;
 
+import com.example.tickets.domain.base.Auditable;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Ticket {
+public class Ticket extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -43,12 +43,6 @@ public class Ticket {
     @Builder.Default
     private ArrayList<QrCode> qrCodes = new ArrayList<>();
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -56,23 +50,12 @@ public class Ticket {
         Ticket ticket = (Ticket) o;
         return Objects.equals(id, ticket.id)
             && status == ticket.status
-            && Objects.equals(createdAt, ticket.createdAt)
-            && Objects.equals(updatedAt, ticket.updatedAt);
+            && Objects.equals(getCreatedAt(), ticket.getCreatedAt())
+            && Objects.equals(getUpdatedAt(), ticket.getUpdatedAt());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, status, createdAt, updatedAt);
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+        return Objects.hash(id, status, getCreatedAt(), getUpdatedAt());
     }
 }

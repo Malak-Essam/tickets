@@ -1,5 +1,6 @@
 package com.example.tickets.domain;
 
+import com.example.tickets.domain.base.Auditable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,10 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -27,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TicketValidation {
+public class TicketValidation extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -45,12 +43,6 @@ public class TicketValidation {
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -59,23 +51,12 @@ public class TicketValidation {
         return Objects.equals(id, that.id)
             && status == that.status
             && validationMethod == that.validationMethod
-            && Objects.equals(createdAt, that.createdAt)
-            && Objects.equals(updatedAt, that.updatedAt);
+            && Objects.equals(getCreatedAt(), that.getCreatedAt())
+            && Objects.equals(getUpdatedAt(), that.getUpdatedAt());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, status, validationMethod, createdAt, updatedAt);
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+        return Objects.hash(id, status, validationMethod, getCreatedAt(), getUpdatedAt());
     }
 }
