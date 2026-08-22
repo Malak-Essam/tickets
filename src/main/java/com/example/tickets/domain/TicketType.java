@@ -33,6 +33,8 @@ public class TicketType extends Auditable {
     @Column(nullable = false)
     private Integer totalAvailable;
 
+    private String description;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     private Event event;
