@@ -4,12 +4,14 @@ import com.example.tickets.domain.base.Auditable;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users")
@@ -23,27 +25,29 @@ public class User extends Auditable {
     @Column(nullable = false, updatable = false)
     private UUID id;
 
+    @Setter
     @Column(nullable = false)
     private String name;
 
+    @Setter
     @Column(nullable = false, unique = true)
     private String email;
 
     @OneToMany(mappedBy = "purchaser")
     @Builder.Default
-    private ArrayList<Ticket> purchasedTickets = new ArrayList<>();
+    private List<Ticket> purchasedTickets = new ArrayList<>();
 
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL)
     @Builder.Default
-    private ArrayList<Event> organizedEvents = new ArrayList<>();
+    private List<Event> organizedEvents = new ArrayList<>();
 
     @ManyToMany(mappedBy = "attendees")
     @Builder.Default
-    private ArrayList<Event> attendingEvents = new ArrayList<>();
+    private List<Event> attendingEvents = new ArrayList<>();
 
     @ManyToMany(mappedBy = "staff")
     @Builder.Default
-    private ArrayList<Event> staffingEvents = new ArrayList<>();
+    private List<Event> staffingEvents = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {
