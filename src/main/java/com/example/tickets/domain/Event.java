@@ -1,6 +1,7 @@
 package com.example.tickets.domain;
 
 import com.example.tickets.domain.base.Auditable;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,12 +18,14 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "events")
@@ -54,10 +57,12 @@ public class Event extends Auditable {
     @Column(nullable = false)
     private LocalDateTime salesEnd;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EventStatusEnum status;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organizer_id")
     private User organizer;
@@ -69,7 +74,7 @@ public class Event extends Auditable {
         inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     @Builder.Default
-    private ArrayList<User> attendees = new ArrayList<>();
+    private List<User> attendees = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -78,11 +83,11 @@ public class Event extends Auditable {
         inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     @Builder.Default
-    private ArrayList<User> staff = new ArrayList<>();
+    private List<User> staff = new ArrayList<>();
 
-    @OneToMany(mappedBy = "event")
+    @OneToMany(mappedBy = "event", cascade = CascadeType.PERSIST)
     @Builder.Default
-    private ArrayList<TicketType> ticketTypes = new ArrayList<>();
+    private List<TicketType> ticketTypes = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {
