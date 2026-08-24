@@ -89,6 +89,11 @@ public class Event extends Auditable {
     @Builder.Default
     private List<TicketType> ticketTypes = new ArrayList<>();
 
+    public void addTicketType(TicketType ticketType) {
+        ticketTypes.add(ticketType);
+        ticketType.setEvent(this);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

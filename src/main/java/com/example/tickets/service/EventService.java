@@ -28,11 +28,17 @@ public class EventService {
         User organizer = userRepository.findById(organizerId)
             .orElseThrow(() -> new IllegalStateException("Organizer %s does not exist".formatted(organizerId)));
         Event event = eventMapper.toEvent(request);
+
+        request.ticketTypes()
+                .stream()
+                .map(eventMapper::toTicketType)
+                .forEach(event::addTicketType);
         event.setOrganizer(organizer);
         event.setStatus(request.status() == null ? EventStatusEnum.DRAFT : request.status());
         if (event.getTicketTypes() != null) {
             event.getTicketTypes().forEach(type -> type.setEvent(event));
         }
-        return eventRepository.save(event);
+        Event saved = eventRepository.save(event);
+        return saved;
     }
 }

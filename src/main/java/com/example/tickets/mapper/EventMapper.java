@@ -12,13 +12,18 @@ import com.example.tickets.dto.request.CreateTicketTypeRequest;
 import com.example.tickets.dto.response.EventResponse;
 import com.example.tickets.dto.response.TicketTypeResponse;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(
+        componentModel = MappingConstants.ComponentModel.SPRING,
+        unmappedTargetPolicy = ReportingPolicy.IGNORE
+)
 public interface EventMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "ticketTypes", ignore = true)
     Event toEvent(CreateEventRequest request);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "event", ignore = true)
     TicketType toTicketType(CreateTicketTypeRequest request);
 
     @Mapping(target = "organizerId", source = "organizer.id")
