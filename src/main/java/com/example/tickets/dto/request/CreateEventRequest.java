@@ -18,6 +18,6 @@ public record CreateEventRequest(
     @NotBlank @Size(max = 255) String venue,
     @NotNull LocalDateTime salesStart,
     @NotNull LocalDateTime salesEnd,
-    EventStatusEnum status,
+    @NotNull EventStatusEnum status,
     @NotEmpty List<@Valid CreateTicketTypeRequest> ticketTypes) {
 }
