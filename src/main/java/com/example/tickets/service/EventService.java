@@ -9,6 +9,7 @@ import com.example.tickets.domain.Event;
 import com.example.tickets.domain.EventStatusEnum;
 import com.example.tickets.domain.User;
 import com.example.tickets.dto.request.CreateEventRequest;
+import com.example.tickets.exception.InvalidEventDatesException;
 import com.example.tickets.mapper.EventMapper;
 import com.example.tickets.repository.EventRepository;
 import com.example.tickets.repository.UserRepository;
@@ -27,6 +28,15 @@ public class EventService {
     public Event create(UUID organizerId, CreateEventRequest request) {
         User organizer = userRepository.findById(organizerId)
             .orElseThrow(() -> new IllegalStateException("Organizer %s does not exist".formatted(organizerId)));
+        if (!request.endDate().isAfter(request.startDate())) {
+            throw new InvalidEventDatesException("endDate must be after startDate");
+        }
+        if (!request.salesEnd().isAfter(request.salesStart())) {
+            throw new InvalidEventDatesException("salesEnd must be after salesStart");
+        }
+        if (request.salesStart().isAfter(request.startDate())) {
+            throw new InvalidEventDatesException("salesStart must not be after startDate");
+        }
         Event event = eventMapper.toEvent(request);
 
         request.ticketTypes()
