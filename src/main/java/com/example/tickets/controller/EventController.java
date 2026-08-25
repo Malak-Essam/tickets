@@ -17,6 +17,7 @@ import com.example.tickets.mapper.EventMapper;
 import com.example.tickets.service.EventService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -28,7 +29,7 @@ public class EventController {
     private final EventMapper eventMapper;
 
     @PostMapping
-    public ResponseEntity<EventResponse> create(@RequestBody CreateEventRequest request,
+    public ResponseEntity<EventResponse> create(@Valid @RequestBody CreateEventRequest request,
         HttpServletRequest servletRequest) {
         User currentUser = (User) servletRequest.getAttribute(UserProvisioningFilter.CURRENT_USER_ATTRIBUTE);
         if (currentUser == null) {
