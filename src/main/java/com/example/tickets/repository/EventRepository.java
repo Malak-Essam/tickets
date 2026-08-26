@@ -1,5 +1,6 @@
 package com.example.tickets.repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -11,4 +12,6 @@ import com.example.tickets.domain.Event;
 public interface EventRepository extends JpaRepository<Event, UUID> {
 
     Page<Event> findAllByOrganizerId(UUID organizerId, Pageable pageable);
+
+    Optional<Event> findByIdAndOrganizerId(UUID id, UUID organizerId);
 }

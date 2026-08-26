@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.NoSuchElementException;
+
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -40,6 +42,15 @@ public class GlobalExceptionHandler {
         problem.setTitle("Invalid request");
         problem.setDetail("Validation failed");
         problem.setProperty("errors", errors);
+        return problem;
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ProblemDetail handleNotFound(NoSuchElementException ex) {
+        log.warn("Resource not found: {}", ex.getMessage());
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        problem.setTitle("Not found");
+        problem.setDetail(ex.getMessage());
         return problem;
     }
 

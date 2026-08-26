@@ -2,6 +2,7 @@ package com.example.tickets.controller;
 
 import java.net.URI;
 import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -75,5 +77,16 @@ public class EventController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
         Page<Event> events = eventService.list(currentUser.getId(), pageable);
         return ResponseEntity.ok(eventMapper.toPageResponse(events));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<EventResponse> getById(@PathVariable UUID id,
+        HttpServletRequest servletRequest) {
+        User currentUser = (User) servletRequest.getAttribute(UserProvisioningFilter.CURRENT_USER_ATTRIBUTE);
+        if (currentUser == null) {
+            throw new IllegalStateException("Authenticated user is missing from the request");
+        }
+        Event event = eventService.getById(id, currentUser.getId());
+        return ResponseEntity.ok(eventMapper.toResponse(event));
     }
 }

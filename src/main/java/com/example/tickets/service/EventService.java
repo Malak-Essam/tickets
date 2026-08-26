@@ -1,5 +1,6 @@
 package com.example.tickets.service;
 
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -57,5 +58,11 @@ public class EventService {
     @Transactional(readOnly = true)
     public Page<Event> list(UUID organizerId, Pageable pageable) {
         return eventRepository.findAllByOrganizerId(organizerId, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Event getById(UUID id, UUID organizerId) {
+        return eventRepository.findByIdAndOrganizerId(id, organizerId)
+            .orElseThrow(() -> new NoSuchElementException("Event not found"));
     }
 }
