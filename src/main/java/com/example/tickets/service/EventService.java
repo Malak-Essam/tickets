@@ -12,6 +12,7 @@ import com.example.tickets.domain.Event;
 import com.example.tickets.domain.EventStatusEnum;
 import com.example.tickets.domain.User;
 import com.example.tickets.dto.request.CreateEventRequest;
+import com.example.tickets.dto.request.UpdateEventRequest;
 import com.example.tickets.exception.InvalidEventDatesException;
 import com.example.tickets.mapper.EventMapper;
 import com.example.tickets.repository.EventRepository;
@@ -64,5 +65,27 @@ public class EventService {
     public Event getById(UUID id, UUID organizerId) {
         return eventRepository.findByIdAndOrganizerId(id, organizerId)
             .orElseThrow(() -> new NoSuchElementException("Event not found"));
+    }
+
+    @Transactional
+    public Event update(UUID id, UUID organizerId, UpdateEventRequest request) {
+        Event event = getById(id, organizerId);
+        if (!request.endDate().isAfter(request.startDate())) {
+            throw new InvalidEventDatesException("endDate must be after startDate");
+        }
+        if (!request.salesEnd().isAfter(request.salesStart())) {
+            throw new InvalidEventDatesException("salesEnd must be after salesStart");
+        }
+        if (request.salesStart().isAfter(request.startDate())) {
+            throw new InvalidEventDatesException("salesStart must not be after startDate");
+        }
+        event.setName(request.name());
+        event.setStartDate(request.startDate());
+        event.setEndDate(request.endDate());
+        event.setVenue(request.venue());
+        event.setSalesStart(request.salesStart());
+        event.setSalesEnd(request.salesEnd());
+        event.setStatus(request.status());
+        return eventRepository.save(event);
     }
 }

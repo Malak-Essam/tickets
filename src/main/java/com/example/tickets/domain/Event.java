@@ -39,21 +39,27 @@ public class Event extends Auditable {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Setter
     @Column(nullable = false)
     private String name;
 
+    @Setter
     @Column(nullable = false)
     private LocalDateTime startDate;
 
+    @Setter
     @Column(nullable = false)
     private LocalDateTime endDate;
 
+    @Setter
     @Column(nullable = false)
     private String venue;
 
+    @Setter
     @Column(nullable = false)
     private LocalDateTime salesStart;
 
+    @Setter
     @Column(nullable = false)
     private LocalDateTime salesEnd;
 

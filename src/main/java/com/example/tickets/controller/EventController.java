@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.tickets.domain.Event;
 import com.example.tickets.domain.User;
 import com.example.tickets.dto.request.CreateEventRequest;
+import com.example.tickets.dto.request.UpdateEventRequest;
 import com.example.tickets.dto.response.EventResponse;
 import com.example.tickets.dto.response.PageResponse;
 import com.example.tickets.filter.UserProvisioningFilter;
@@ -87,6 +89,18 @@ public class EventController {
             throw new IllegalStateException("Authenticated user is missing from the request");
         }
         Event event = eventService.getById(id, currentUser.getId());
+        return ResponseEntity.ok(eventMapper.toResponse(event));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EventResponse> update(@PathVariable UUID id,
+        @Valid @RequestBody UpdateEventRequest request,
+        HttpServletRequest servletRequest) {
+        User currentUser = (User) servletRequest.getAttribute(UserProvisioningFilter.CURRENT_USER_ATTRIBUTE);
+        if (currentUser == null) {
+            throw new IllegalStateException("Authenticated user is missing from the request");
+        }
+        Event event = eventService.update(id, currentUser.getId(), request);
         return ResponseEntity.ok(eventMapper.toResponse(event));
     }
 }
