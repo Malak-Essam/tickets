@@ -1,5 +1,7 @@
 package com.example.tickets.mapper;
 
+import org.springframework.data.domain.Page;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -10,6 +12,7 @@ import com.example.tickets.domain.TicketType;
 import com.example.tickets.dto.request.CreateEventRequest;
 import com.example.tickets.dto.request.CreateTicketTypeRequest;
 import com.example.tickets.dto.response.EventResponse;
+import com.example.tickets.dto.response.PageResponse;
 import com.example.tickets.dto.response.TicketTypeResponse;
 
 @Mapper(
@@ -30,4 +33,13 @@ public interface EventMapper {
     EventResponse toResponse(Event event);
 
     TicketTypeResponse toResponse(TicketType ticketType);
+
+    default PageResponse<EventResponse> toPageResponse(Page<Event> page) {
+        return new PageResponse<>(
+            page.getContent().stream().map(this::toResponse).toList(),
+            page.getNumber(),
+            page.getSize(),
+            page.getTotalElements(),
+            page.getTotalPages());
+    }
 }

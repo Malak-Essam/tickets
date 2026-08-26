@@ -2,6 +2,8 @@ package com.example.tickets.service;
 
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,5 +52,10 @@ public class EventService {
         }
         Event saved = eventRepository.save(event);
         return saved;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Event> list(UUID organizerId, Pageable pageable) {
+        return eventRepository.findAllByOrganizerId(organizerId, pageable);
     }
 }
