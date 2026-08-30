@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -90,6 +91,17 @@ public class EventController {
         }
         Event event = eventService.getById(id, currentUser.getId());
         return ResponseEntity.ok(eventMapper.toResponse(event));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable UUID id,
+        HttpServletRequest servletRequest) {
+        User currentUser = (User) servletRequest.getAttribute(UserProvisioningFilter.CURRENT_USER_ATTRIBUTE);
+        if (currentUser == null) {
+            throw new IllegalStateException("Authenticated user is missing from the request");
+        }
+        eventService.delete(id, currentUser.getId());
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
