@@ -68,6 +68,12 @@ public class EventService {
     }
 
     @Transactional
+    public void delete(UUID id, UUID organizerId) {
+        Event event = getById(id, organizerId);
+        eventRepository.delete(event);
+    }
+
+    @Transactional
     public Event update(UUID id, UUID organizerId, UpdateEventRequest request) {
         Event event = getById(id, organizerId);
         if (!request.endDate().isAfter(request.startDate())) {
