@@ -91,7 +91,7 @@ public class Event extends Auditable {
     @Builder.Default
     private List<User> staff = new ArrayList<>();
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     @Builder.Default
     private List<TicketType> ticketTypes = new ArrayList<>();
 
