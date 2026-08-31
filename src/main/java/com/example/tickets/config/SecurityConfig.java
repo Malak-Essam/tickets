@@ -22,6 +22,7 @@ public class SecurityConfig {
         return http
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/error").permitAll()
+                .requestMatchers("/api/v1/events/public").permitAll()
                 .anyRequest().authenticated())
             .oauth2ResourceServer(resourceServer -> resourceServer.jwt(Customizer.withDefaults()))
             .addFilterAfter(userProvisioningFilter, BearerTokenAuthenticationFilter.class)
