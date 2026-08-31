@@ -26,6 +26,7 @@ import com.example.tickets.dto.request.CreateEventRequest;
 import com.example.tickets.dto.request.UpdateEventRequest;
 import com.example.tickets.dto.response.EventResponse;
 import com.example.tickets.dto.response.PageResponse;
+import com.example.tickets.dto.response.PublishedEventResponse;
 import com.example.tickets.filter.UserProvisioningFilter;
 import com.example.tickets.mapper.EventMapper;
 import com.example.tickets.service.EventService;
@@ -90,6 +91,12 @@ public class EventController {
             ? eventService.searchPublished(q.trim(), pageable)
             : eventService.listPublished(pageable);
         return ResponseEntity.ok(eventMapper.toPageResponse(events));
+    }
+
+    @GetMapping("/public/{id}")
+    public ResponseEntity<PublishedEventResponse> getPublishedById(@PathVariable UUID id) {
+        Event event = eventService.getPublishedEvent(id);
+        return ResponseEntity.ok(eventMapper.toPublishedResponse(event));
     }
 
     @GetMapping("/{id}")
