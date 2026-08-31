@@ -68,7 +68,7 @@ public class EventService {
 
     @Transactional(readOnly = true)
     public Page<Event> searchPublished(String query, Pageable pageable) {
-        return eventRepository.searchByStatusAndNameOrVenue(EventStatusEnum.PUBLISHED.name(), query, pageable);
+        return eventRepository.searchByNameOrVenue(query, pageable);
     }
 
     @Transactional(readOnly = true)
