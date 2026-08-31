@@ -87,14 +87,17 @@ public class EventController {
         @RequestParam(defaultValue = "0") @Min(0) int page,
         @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size,
         @RequestParam(defaultValue = "startDate") String sort,
-        @RequestParam(defaultValue = "asc") String direction) {
+        @RequestParam(defaultValue = "asc") String direction,
+        @RequestParam(required = false) String q) {
         if (!ALLOWED_SORT_FIELDS.contains(sort)) {
             throw new IllegalArgumentException(
                 "sort must be one of: " + ALLOWED_SORT_FIELDS);
         }
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
-        Page<Event> events = eventService.listPublished(pageable);
+        Page<Event> events = (q != null && !q.isBlank())
+            ? eventService.searchPublished(q.trim(), pageable)
+            : eventService.listPublished(pageable);
         return ResponseEntity.ok(eventMapper.toPageResponse(events));
     }
 
