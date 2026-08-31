@@ -13,6 +13,8 @@ import com.example.tickets.dto.request.CreateEventRequest;
 import com.example.tickets.dto.request.CreateTicketTypeRequest;
 import com.example.tickets.dto.response.EventResponse;
 import com.example.tickets.dto.response.PageResponse;
+import com.example.tickets.dto.response.PublishedEventResponse;
+import com.example.tickets.dto.response.PublishedTicketTypeResponse;
 import com.example.tickets.dto.response.TicketTypeResponse;
 
 @Mapper(
@@ -33,6 +35,10 @@ public interface EventMapper {
     EventResponse toResponse(Event event);
 
     TicketTypeResponse toResponse(TicketType ticketType);
+
+    PublishedEventResponse toPublishedResponse(Event event);
+
+    PublishedTicketTypeResponse toPublishedResponse(TicketType ticketType);
 
     default PageResponse<EventResponse> toPageResponse(Page<Event> page) {
         return new PageResponse<>(

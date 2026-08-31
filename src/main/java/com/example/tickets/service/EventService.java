@@ -72,6 +72,12 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
+    public Event getPublishedEvent(UUID id) {
+        return eventRepository.findByIdAndStatus(id, EventStatusEnum.PUBLISHED)
+            .orElseThrow(() -> new NoSuchElementException("Event not found"));
+    }
+
+    @Transactional(readOnly = true)
     public Event getById(UUID id, UUID organizerId) {
         return eventRepository.findByIdAndOrganizerId(id, organizerId)
             .orElseThrow(() -> new NoSuchElementException("Event not found"));
