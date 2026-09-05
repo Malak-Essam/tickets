@@ -28,14 +28,13 @@ import lombok.NoArgsConstructor;
 public class QrCode extends Auditable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private QrCodeStatusEnum status;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT", name = "\"value\"")
     private String value;
 
     @ManyToOne(fetch = FetchType.LAZY)
