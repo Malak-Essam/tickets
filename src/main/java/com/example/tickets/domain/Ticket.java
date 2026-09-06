@@ -4,6 +4,7 @@ import com.example.tickets.domain.base.Auditable;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -37,11 +38,11 @@ public class Ticket extends Auditable {
 
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
     @Builder.Default
-    private ArrayList<TicketValidation> validations = new ArrayList<>();
+    private List<TicketValidation> validations = new ArrayList<>();
 
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
     @Builder.Default
-    private ArrayList<QrCode> qrCodes = new ArrayList<>();
+    private List<QrCode> qrCodes = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {
