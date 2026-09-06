@@ -63,6 +63,15 @@ public class GlobalExceptionHandler {
         return problem;
     }
 
+    @ExceptionHandler(TicketSoldOutException.class)
+    public ProblemDetail handleSoldOut(TicketSoldOutException ex) {
+        log.warn("Ticket type sold out: {}", ex.getMessage());
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        problem.setTitle("Ticket sold out");
+        problem.setDetail(ex.getMessage());
+        return problem;
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ProblemDetail handleUnreadable(HttpMessageNotReadableException ex) {
         log.warn("Malformed request body: {}", ex.getMessage());
