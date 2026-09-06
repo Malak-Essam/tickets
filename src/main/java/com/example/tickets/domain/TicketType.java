@@ -32,6 +32,7 @@ public class TicketType extends Auditable {
     @Column(nullable = false)
     private BigDecimal price;
 
+    @Setter
     @Column(nullable = false)
     private Integer totalAvailable;
 
