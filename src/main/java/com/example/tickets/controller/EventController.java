@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +32,10 @@ import com.example.tickets.filter.UserProvisioningFilter;
 import com.example.tickets.mapper.EventMapper;
 import com.example.tickets.service.EventService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -41,6 +46,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/events")
 @RequiredArgsConstructor
 @Validated
+@Tag(name = "Events", description = "Event management endpoints")
 public class EventController {
 
     private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("name", "createdAt", "startDate");
@@ -48,7 +54,14 @@ public class EventController {
     private final EventService eventService;
     private final EventMapper eventMapper;
 
+    @PreAuthorize("hasRole('ORGANIZER')")
     @PostMapping
+    @Operation(summary = "Create a new event", description = "Creates a new event with its ticket types. Requires ORGANIZER role.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "201", description = "Event created successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid request body"),
+        @ApiResponse(responseCode = "403", description = "Not authorized — requires ORGANIZER role")
+    })
     public ResponseEntity<EventResponse> create(@Valid @RequestBody CreateEventRequest request,
         HttpServletRequest servletRequest) {
         User currentUser = (User) servletRequest.getAttribute(UserProvisioningFilter.CURRENT_USER_ATTRIBUTE);
@@ -62,7 +75,13 @@ public class EventController {
             .body(response);
     }
 
+    @PreAuthorize("hasRole('ORGANIZER')")
     @GetMapping
+    @Operation(summary = "List events for the current organizer", description = "Returns a paginated, sortable list of events owned by the authenticated organizer.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Events retrieved successfully"),
+        @ApiResponse(responseCode = "403", description = "Not authorized — requires ORGANIZER role")
+    })
     public ResponseEntity<PageResponse<EventResponse>> list(
         @RequestParam(defaultValue = "0") @Min(0) int page,
         @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size,
@@ -84,6 +103,10 @@ public class EventController {
     }
 
     @GetMapping("/public")
+    @Operation(summary = "List published events", description = "Returns a paginated list of published events. Public — no authentication required.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Published events retrieved successfully")
+    })
     public ResponseEntity<PageResponse<EventResponse>> listPublished(
         @RequestParam(required = false) String q,
         Pageable pageable) {
@@ -94,12 +117,24 @@ public class EventController {
     }
 
     @GetMapping("/public/{id}")
+    @Operation(summary = "Get a published event by ID", description = "Returns details of a single published event. Public — no authentication required.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Event found"),
+        @ApiResponse(responseCode = "404", description = "Event not found")
+    })
     public ResponseEntity<PublishedEventResponse> getPublishedById(@PathVariable UUID id) {
         Event event = eventService.getPublishedEvent(id);
         return ResponseEntity.ok(eventMapper.toPublishedResponse(event));
     }
 
+    @PreAuthorize("hasRole('ORGANIZER')")
     @GetMapping("/{id}")
+    @Operation(summary = "Get an event by ID", description = "Returns details of a single event owned by the authenticated organizer.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Event found"),
+        @ApiResponse(responseCode = "403", description = "Not authorized — requires ORGANIZER role"),
+        @ApiResponse(responseCode = "404", description = "Event not found")
+    })
     public ResponseEntity<EventResponse> getById(@PathVariable UUID id,
         HttpServletRequest servletRequest) {
         User currentUser = (User) servletRequest.getAttribute(UserProvisioningFilter.CURRENT_USER_ATTRIBUTE);
@@ -110,7 +145,14 @@ public class EventController {
         return ResponseEntity.ok(eventMapper.toResponse(event));
     }
 
+    @PreAuthorize("hasRole('ORGANIZER')")
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete an event", description = "Deletes an event owned by the authenticated organizer.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Event deleted successfully"),
+        @ApiResponse(responseCode = "403", description = "Not authorized — requires ORGANIZER role"),
+        @ApiResponse(responseCode = "404", description = "Event not found")
+    })
     public ResponseEntity<Void> delete(@PathVariable UUID id,
         HttpServletRequest servletRequest) {
         User currentUser = (User) servletRequest.getAttribute(UserProvisioningFilter.CURRENT_USER_ATTRIBUTE);
@@ -121,7 +163,15 @@ public class EventController {
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('ORGANIZER')")
     @PutMapping("/{id}")
+    @Operation(summary = "Update an event", description = "Updates an event owned by the authenticated organizer.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Event updated successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid request body"),
+        @ApiResponse(responseCode = "403", description = "Not authorized — requires ORGANIZER role"),
+        @ApiResponse(responseCode = "404", description = "Event not found")
+    })
     public ResponseEntity<EventResponse> update(@PathVariable UUID id,
         @Valid @RequestBody UpdateEventRequest request,
         HttpServletRequest servletRequest) {
